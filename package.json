@@ -1,0 +1,13 @@
+{
+  "name": "roblox-pets-api",
+  "version": "1.0.0",
+  "description": "API para receber dados de pets do Roblox com auto-limpeza",
+  "main": "api/animals.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "keywords": ["roblox", "api", "pets", "vercel"],
+  "author": "",
+  "license": "MIT"
+}
