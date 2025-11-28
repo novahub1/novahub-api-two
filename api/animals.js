@@ -9,7 +9,7 @@ setInterval(() => {
     const count = animalsData.length;
     if (count > 0) {
         animalsData = [];
-        console.log(`🔄 Limpeza automática: ${count} animais apagados`);
+        console.log(`Automatic cleanup: ${count} animals deleted`);
     }
 }, CLEANUP_INTERVAL);
 
@@ -33,7 +33,7 @@ export default async function handler(req, res) {
             if (!animal || !animal.name || !animal.generation || !animal.jobId) {
                 return res.status(400).json({
                     success: false,
-                    error: 'Dados inválidos'
+                    error: 'Invalid data'
                 });
             }
             
@@ -43,12 +43,12 @@ export default async function handler(req, res) {
                 generation: animal.generation
             });
             
-            console.log('Pet recebido:', animal.name, animal.generation);
-            console.log(`📊 Total de animais: ${animalsData.length}`);
+            console.log('Animal received:', animal.name, animal.generation);
+            console.log(`Total number of animals: ${animalsData.length}`);
             
             return res.status(200).json({
                 animal: null,
-                message: `Dados serão apagados automaticamente em 40 segundos`
+                message: `Data will be automatically deleted in 40 seconds`
             });
             
         } catch (error) {
@@ -69,6 +69,6 @@ export default async function handler(req, res) {
     
     return res.status(405).json({
         success: false,
-        error: 'Método não permitido'
+        error: 'Method not allowed'
     });
 }
