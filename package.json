@@ -1,7 +1,7 @@
 {
   "name": "roblox-pets-api",
   "version": "1.0.0",
-  "description": "API para receber dados de pets do Roblox com auto-limpeza",
+  "description": "API for receiving animal data from SAB with self-cleaning",
   "main": "api/animals.js",
   "scripts": {
     "dev": "vercel dev",
