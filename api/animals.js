@@ -2,9 +2,8 @@
 // API - Dados são apagados automaticamente a cada 40 segundos EXATOS
 
 let animalsData = [];
-const CLEANUP_INTERVAL = 40000; // 40 segundos - Tempo de apagar os dados
+const CLEANUP_INTERVAL = 40000; // 40 segundos
 
-// Limpeza automática independente de requisições
 setInterval(() => {
     const count = animalsData.length;
     if (count > 0) {
@@ -13,9 +12,12 @@ setInterval(() => {
     }
 }, CLEANUP_INTERVAL);
 
-// Middleware de autenticação
 function authenticate(req) {
-    const apiKey = req.headers['x-api-key'] || req.headers['authorization']?.replace('Bearer ', '');
+    // Aceita key por header OU query string (?key=xxx)
+    const apiKey = req.headers['x-api-key'] || 
+                   req.headers['authorization']?.replace('Bearer ', '') ||
+                   (req.url && new URL(req.url, 'http://localhost').searchParams.get('key'));
+    
     const validApiKey = process.env.API_KEY;
     
     if (!validApiKey) {
@@ -27,7 +29,6 @@ function authenticate(req) {
 }
 
 export default async function handler(req, res) {
-    // CORS
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
@@ -38,7 +39,6 @@ export default async function handler(req, res) {
         return;
     }
     
-    // Verificar autenticação
     if (!authenticate(req)) {
         return res.status(401).json({
             success: false,
@@ -46,7 +46,6 @@ export default async function handler(req, res) {
         });
     }
     
-    // POST - Receber animal
     if (req.method === 'POST') {
         try {
             const { animal } = req.body;
@@ -81,7 +80,6 @@ export default async function handler(req, res) {
         }
     }
     
-    // GET - Retornar todos
     if (req.method === 'GET') {
         return res.status(200).json({
             success: true,
