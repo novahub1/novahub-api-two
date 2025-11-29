@@ -13,16 +13,37 @@ setInterval(() => {
     }
 }, CLEANUP_INTERVAL);
 
+// Middleware de autenticação
+function authenticate(req) {
+    const apiKey = req.headers['x-api-key'] || req.headers['authorization']?.replace('Bearer ', '');
+    const validApiKey = process.env.API_KEY;
+    
+    if (!validApiKey) {
+        console.error('API_KEY not configured in environment variables');
+        return false;
+    }
+    
+    return apiKey === validApiKey;
+}
+
 export default async function handler(req, res) {
     // CORS
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-API-Key, Authorization');
     
     if (req.method === 'OPTIONS') {
         res.status(200).end();
         return;
+    }
+    
+    // Verificar autenticação
+    if (!authenticate(req)) {
+        return res.status(401).json({
+            success: false,
+            error: 'Unauthorized - Invalid or missing API key'
+        });
     }
     
     // POST - Receber animal
@@ -47,6 +68,7 @@ export default async function handler(req, res) {
             console.log(`Total number of animals: ${animalsData.length}`);
             
             return res.status(200).json({
+                success: true,
                 animal: null,
                 message: `Data will be automatically deleted in 40 seconds`
             });
@@ -62,6 +84,7 @@ export default async function handler(req, res) {
     // GET - Retornar todos
     if (req.method === 'GET') {
         return res.status(200).json({
+            success: true,
             animals: animalsData,
             total: animalsData.length
         });
